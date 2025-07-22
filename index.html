@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>凯撒密码枚举</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>凯撒密码枚举</h1>
+    <div>
+        <label for="inputText">输入文本：</label>
+        <textarea id="inputText" placeholder="请输入文本"></textarea>
+        <button onclick="enumerateText()">枚举</button>
+    </div>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>偏移量</th>
+                <th>加密结果</th>
+                <th>偏移量</th>
+                <th>加密结果</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        // 获取输入框元素
+        const inputText = document.getElementById("inputText");
+
+        // 添加键盘事件监听器
+        inputText.addEventListener("keypress", function(event) {
+            // 检测是否按下回车键（键码为13）
+            if (event.key === "Enter") {
+                enumerateText(); // 调用枚举函数
+            }
+        });
+
+        function enumerateText() {
+            const inputText = document.getElementById("inputText").value;
+            const tableBody = document.querySelector("#resultTable tbody");
+            tableBody.innerHTML = ""; // 清空表格内容
+
+            for (let shift = 0; shift < 13; shift++) {
+                let row = document.createElement("tr");
+
+                // 第一列
+                let shiftCell1 = document.createElement("td");
+                shiftCell1.textContent = shift;
+                row.appendChild(shiftCell1);
+
+                let resultCell1 = document.createElement("td");
+                let result1 = caesarEncrypt(inputText, shift);
+                resultCell1.textContent = result1;
+                row.appendChild(resultCell1);
+
+                // 第二列
+                let shiftCell2 = document.createElement("td");
+                shiftCell2.textContent = shift + 13;
+                row.appendChild(shiftCell2);
+
+                let resultCell2 = document.createElement("td");
+                let result2 = caesarEncrypt(inputText, shift + 13);
+                resultCell2.textContent = result2;
+                row.appendChild(resultCell2);
+
+                tableBody.appendChild(row);
+            }
+        }
+
+        function caesarEncrypt(text, shift) {
+            let encryptedText = "";
+            for (let i = 0; i < text.length; i++) {
+                if (text[i].match(/[A-Z]/)) {
+                    // 大写字母
+                    encryptedText += String.fromCharCode(((text.charCodeAt(i) - 65 + shift) % 26) + 65);
+                } else if (text[i].match(/[a-z]/)) {
+                    // 小写字母
+                    encryptedText += String.fromCharCode(((text.charCodeAt(i) - 97 + shift) % 26) + 97);
+                } else {
+                    // 保留非字母字符（包括换行符）
+                    encryptedText += text[i];
+                }
+            }
+            return encryptedText;
+        }
+    </script>
+</body>
+</html>
